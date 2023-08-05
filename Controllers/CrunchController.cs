@@ -12,15 +12,16 @@ namespace SerialAPIMuncher.Controllers
         //Stale DNS Entries: //builder.Services.AddhttpClient();
         //HttpClient instances cache DNS entries.If the IP address of a service changes, HttpClient might still point to the old address.
         private readonly HttpClient _client;
-        public CrunchController(IHttpClientFactory factory)
+        private readonly IConfiguration _config;
+        public CrunchController(IHttpClientFactory factory, IConfiguration config)
         {
             _client = factory.CreateClient(); //transient
+            this._config = config;
         }
 
         [HttpGet("/test1")]
         public async Task<IActionResult> Quest1()
         {
-            //string uri = "https://raw.githubusercontent.com/qualified/challenge-data/master/words_alpha.txt";
             string uri = "https://coderbyte.com/api/challenges/json/age-counting";
             HttpResponseMessage response = await _client.GetAsync(uri);
             response.EnsureSuccessStatusCode();
@@ -51,8 +52,6 @@ namespace SerialAPIMuncher.Controllers
         public async Task<IActionResult> Quest2()
         {
             //string jsonResponse = "{\"data\":\"key=IAfpK, age=2, key=WNVdi, age=1, key=jp9zt, age=47, key=jp9zt, age=1\"}";
-            //JObject obj = JObject.Parse(s);
-            //string data = obj["data"].ToString();
             string uri = "https://coderbyte.com/api/challenges/json/age-counting";
             HttpResponseMessage response = await _client.GetAsync(uri);
             string s = await response.Content.ReadAsStringAsync();
