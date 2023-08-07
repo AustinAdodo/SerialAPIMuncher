@@ -1,9 +1,4 @@
-﻿
-using System.Net.Http;
-using System;
-using Newtonsoft.Json.Linq;
-
-namespace SerialAPIMuncher.Controllers
+﻿namespace SerialAPIMuncher.Controllers
 {
     public class CrunchController : Controller
     {
