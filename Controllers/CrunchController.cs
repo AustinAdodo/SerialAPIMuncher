@@ -8,6 +8,7 @@
         //HttpClient instances cache DNS entries.If the IP address of a service changes, HttpClient might still point to the old address.
         private readonly HttpClient _client;
         private readonly IConfiguration _config;
+        public const string uri = "https://coderbyte.com/api/challenges/json/age-counting";
         public CrunchController(IHttpClientFactory factory, IConfiguration config)
         {
             _client = factory.CreateClient(); //transient
@@ -17,7 +18,6 @@
         [HttpGet("/test1")]
         public async Task<IActionResult> Quest1()
         {
-            string uri = "https://coderbyte.com/api/challenges/json/age-counting";
             HttpResponseMessage response = await _client.GetAsync(uri);
             response.EnsureSuccessStatusCode();
             string s = await response.Content.ReadAsStringAsync();
@@ -26,20 +26,17 @@
             string dataValue = jsonObject["data"].ToString();
             string[] Pairs = dataValue.Split(',');
             int count = 0;
-
             foreach (string kvp in Pairs)
             {
                 string[] parts = kvp.Trim().Split('=');
-                if (parts.Length == 2 && parts[0].Trim() == "age")
+                bool condition = parts.Length == 2 && parts[0].Trim() == "age" && int.TryParse(parts[1].Trim(), out int age) && age >= 50;
+                if (condition)
                 {
-                    if (int.TryParse(parts[1].Trim(), out int age) && age >= 50)
-                    {
-                        count++;
-                    }
+                    count++;
                 }
             }
             string ans = $"{count}hvblwq79c1";
-            string result = string.Join("", ans.Select((ele,i) => (i + 1 <= ans.Length - 1 && ((i + 1) % 3 == 0)) ? "X" : ele.ToString()));
+            string result = string.Join("", ans.Select((ele, i) => (i + 1 <= ans.Length - 1 && ((i + 1) % 3 == 0)) ? "X" : ele.ToString()));
             return Ok(result);
         }
 
@@ -47,7 +44,6 @@
         public async Task<IActionResult> Quest2()
         {
             //string jsonResponse = "{\"data\":\"key=IAfpK, age=2, key=WNVdi, age=1, key=jp9zt, age=47, key=jp9zt, age=1\"}";
-            string uri = "https://coderbyte.com/api/challenges/json/age-counting";
             HttpResponseMessage response = await _client.GetAsync(uri);
             string s = await response.Content.ReadAsStringAsync();
             JsonDocument doc = JsonDocument.Parse(s);
@@ -108,8 +104,7 @@
             try
             {
                 List<string> result = new List<string>();
-                string logsUrl = "https://coderbyte.com/api/challenges/logs/web-logs-raw";
-                HttpResponseMessage response = await _client.GetAsync(logsUrl);
+                HttpResponseMessage response = await _client.GetAsync(uri);
                 response.EnsureSuccessStatusCode();
                 string logs = await response.Content.ReadAsStringAsync();
                 List<string> uniqueIds = ExtractUniqueIds(logs);
